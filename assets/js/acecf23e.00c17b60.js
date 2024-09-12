@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkxceed_doc_ui=self.webpackChunkxceed_doc_ui||[]).push([[1903],{1912:e=>{e.exports=JSON.parse('{"blogBasePath":"/xceed-doc-ui/blog","blogTitle":"Blog","authorsListPath":"/xceed-doc-ui/blog/authors"}')}}]);
