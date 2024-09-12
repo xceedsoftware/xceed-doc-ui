@@ -168,14 +168,39 @@ const sidebars: SidebarsConfig = {
         'datagrid/unbound-columns',
         'datagrid/comparing-datagrids',
       ],
-    },{
+    },
+    {
       type: 'category',
       label: 'Listbox control',
       link: {
         type: 'doc',
         id: 'listbox/01',
       },
-      items: ['listbox/02','listbox/03','listbox/04','listbox/05','listbox/06','listbox/07','listbox/08'],
+      items: 
+      [
+        'listbox/02',
+        'listbox/03',
+        'listbox/04',
+        'listbox/05',
+        'listbox/06',
+        'listbox/07',
+        'listbox/08',
+        'listbox/09',
+        {
+          type: 'category',
+          label: 'Panels & Views',
+          link: {
+            type: 'generated-index',
+            description: 'Xceed\'s WPF listbox provides panels that can be used directly via the the listbox\'s ItemsPanel property and views that can be used in the specialized MultiViewPanel.',
+          },
+          items: 
+          [
+            'listbox/panel-view/01',
+            'listbox/panel-view/02',
+            'listbox/panel-view/03',
+          ],
+        },
+      ],
     },
     'docking-window-control',
     'material-controls',
