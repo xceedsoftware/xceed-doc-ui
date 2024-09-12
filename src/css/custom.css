@@ -28,3 +28,26 @@
   --ifm-color-primary-lightest: #f89a6b;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Estilo para los bloques de código VB.NET */
+pre code.language-vbnet {
+  background-color: #2d2d2d; /* Fondo oscuro */
+  color: #f8f8f2; /* Texto claro */
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Personaliza las palabras clave, cadenas y comentarios para Visual Basic */
+pre code.language-vbnet .token.keyword {
+  color: #ff79c6; /* Color de palabras clave */
+}
+
+pre code.language-vbnet .token.string {
+  color: #f1fa8c; /* Color de cadenas */
+}
+
+pre code.language-vbnet .token.comment {
+  color: #6272a4; /* Color de comentarios */
+}

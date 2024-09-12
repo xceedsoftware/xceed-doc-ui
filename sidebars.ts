@@ -142,8 +142,8 @@ const sidebars: SidebarsConfig = {
               },
               items: 
               [
-                'datagrid/views-themes/views/02',
-                'datagrid/views-themes/views/03',
+                'datagrid/views-themes/themes/02',
+                'datagrid/views-themes/themes/03',
               ],
             },
           ],

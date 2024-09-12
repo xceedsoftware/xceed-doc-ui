@@ -93,10 +93,11 @@ const config: Config = {
     footer: {
       style: 'dark',
       copyright: `All rights reserved 2020 - ${new Date().getFullYear()} © Xceed Software Inc.`,
-    },
+    },    
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['csharp', 'java', 'python']
     },
   } satisfies Preset.ThemeConfig,
 };
