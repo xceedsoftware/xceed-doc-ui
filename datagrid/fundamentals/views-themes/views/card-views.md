@@ -17,7 +17,7 @@ By default, the data displayed in a card's title is determined by a grid's main 
 The last column whose IsMainColumn property is set to true will be considered as a grid's main (primary) column.
 :::
 
-The background and foreground of the card (including insertion card) titles can be modified through the CardTitleBackground and CardTitleForeground properties. `DataTemplates` can be provided through the CardTitleTemplate and InsertionCardTitleTemplate properties for complete control over the appearance of the card titles (see [Templates](/datagrid/fundamentals/templates/templates)).
+The background and foreground of the card (including insertion card) titles can be modified through the CardTitleBackground and CardTitleForeground properties. `DataTemplates` can be provided through the CardTitleTemplate and InsertionCardTitleTemplate properties for complete control over the appearance of the card titles (see [Templates](/datagrid/fundamentals/templates)).
 
 The width of the cards—more specifically a "column" of cards—can be modified through the CardWidth property. Any insertion cards placed in the header and/or footer sections will acquire the width defined by the CardWidth property; however, insertion cards placed in the fixed header or fixed footer sections will not. Separator lines can also be drawn between card "columns" using the `SeparatorLinePen` property (see Example 4).
 
