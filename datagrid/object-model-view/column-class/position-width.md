@@ -39,7 +39,7 @@ When a grid is in a table-view layout, the first n columns can be fixed so that 
 
 Fixed columns are separated from their scrollable counterparts by a fixed-column splitter, which can be dragged to add or remove fixed columns. Likewise, column-manager cells can be dragged to the left or right of the fixed-column splitter to add or remove fixed columns.
 
-The appearance of the fixed-column splitter can be defined for each row type through the `TableView.FixedColumnSplitterStyle` attached property (see Example 3 in [Styles](/datagrid/fundamentals/styles/styles)). Although the appearance of the fixed-column splitter can be defined for each row type, the width must be the same for all and can be set through the table view's `FixedColumnSplitterWidth` property. The `ShowFixedColumnSplitter` can be used to hide the fixed-column splitter even if a grid contains fixed columns.
+The appearance of the fixed-column splitter can be defined for each row type through the `TableView.FixedColumnSplitterStyle` attached property (see Example 3 in [Styles](/datagrid/fundamentals/styles)). Although the appearance of the fixed-column splitter can be defined for each row type, the width must be the same for all and can be set through the table view's `FixedColumnSplitterWidth` property. The `ShowFixedColumnSplitter` can be used to hide the fixed-column splitter even if a grid contains fixed columns.
 
 ![TableView Fixed Columns](/img/TableView_FixedColumns_thumb.gif)
 

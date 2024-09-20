@@ -18,7 +18,7 @@ The data item that currently has the focus can be retrieved through the `Current
 The `NavigationBehavior` property indicates how the focus navigates from one element to another and can be set to override the navigation behaviors determined by the containing grid.
 
 ## Appearance
-[Styles](/datagrid/fundamentals/styles/styles) are a collection of properties and their associated values which are applied to an element to override the default appearance provided by the element's default style (see also [Templates](/datagrid/fundamentals/templates/templates)). All elements in a grid, with the exception of columns, can be styled in the same way as elements provided by the Microsoft .NET Framework.
+[Styles](/datagrid/fundamentals/styles) are a collection of properties and their associated values which are applied to an element to override the default appearance provided by the element's default style (see also [Templates](/datagrid/fundamentals/templates)). All elements in a grid, with the exception of columns, can be styled in the same way as elements provided by the Microsoft .NET Framework.
 
 Rows also offer the possibility of changing the background and foreground of the selected data items through the `SelectedBackground` and `SelectedForeground` properties. By default, when data items are selected in a grid and the focus is moved outside a grid, the selected data items will remain highlighted. To remove the highlight, the `HideSelection` property can be set to true. The `InactiveSelectionBackground` and `InactiveSelectionForeground` properties can be set to change the background and foreground of the selected data items when the focus is moved outside the containing grid.
 
