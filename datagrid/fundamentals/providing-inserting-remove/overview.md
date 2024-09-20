@@ -1,1 +1,730 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Providing Data
+
+The data items that populate a grid are provided by the `DataGridCollectionView` or `DataGridCollectionViewSource` (in XAML) assigned to the ItemsSource property of the DataGridControl class. These views allow the data items contained in a grid to be grouped, sorted, and/or filtered (see Example 1).  
+
+In order for the `DataGridCollectionViewSource` to create a custom view for the data items that will eventually be displayed in a grid, it must be bound to the underlying data source or data items must be provided manually via the SourceItems property. In turn, a grid will be bound to the `DataGridCollectionViewSource` that contains the customized data-item view (see also [Grouping](/datagrid/fundamentals/grouping/overview), [Sorting](/datagrid/fundamentals/sorting), and [Filtering](/datagrid/fundamentals/filtering/overview)).
+
+`DataRow` objects are the UI representation of data items. They have a limited lifespan and exist only while they are visible in a grid's viewport; this is called virtualization and is the reason that the `Items` property accesses the data items and not the data rows. The `SelectedItem`, `SelectedItems`, and `CurrentItem` properties of the `DataGridControl` class also reference data items and not data rows (see Example 3).
+
+Programmatically, when the `DataGridCollectionView` is bound to a data source, the `ItemProperties.Clear` method must be called prior to adding `DataGridItemProperty` objects to the ItemProperties collection to remove items that were automatically added when the `DataGridCollectionView` was instantiated. Automatic creation of item properties can be disabled by setting the `AutoCreateItemProperties` property of the `DataGridCollectionViewSource` to false (by default, **true**) or by specifying so when creating an instance of the `DataGridCollectionView`.
+
+## Deleting Selected Items
+The `IsDeleteCommandEnabled` property indicates whether the `ApplicationCommands`.Delete command is enabled. When set to true, all selected items (see GlobalSelectedItems property) will be deleted when the delete key is pressed. The `DeletingSelectedItems` event, which is raised prior to deleting the items, allows the operation to be canceled by setting the Abort property, which is received in the event arguments, to true. By default, when an error occurs while deleting an item, the item will be skipped and the operation will continue to the next item. By handling the DeletingSelectedItemError event, this behavior can be modified to either abort the entire operation, retry deleting the item that caused the error, or skip the item (see Example 9). Once the items have been deleted, the SelectedItemsDeleted event will be raised to signal the end of the operation.
+
+To prevent the selected items contained in one or more details from being deleted, the IsDeleteCommandEnabled property of a detail configuration can be set to **false**.
+
+## Examples 
+All examples in this topic assume that the grid is bound to the Orders table of the Northwind database, unless stated otherwise.
+
+<details>
+
+  <summary>Example 1: Binding to a data table</summary>
+
+  This first code example demonstrates how to create a connection to the Access version of the Northwind database and create a property named "*Orders*" to which the grid will be bound. The code should be placed in the** App.xaml.cs** file.
+
+  <Tabs>
+    <TabItem value="csharp" label="C#" default>
+
+      ```csharp
+      public partial class App : Application
+        {
+          public DataSet Data
+          {
+            get; set;
+          }
+          public DataTable Orders
+          {
+            get; set;
+          }
+          protected override void OnStartup( StartupEventArgs e )
+          {
+            // Set the licence key
+            Xceed.Wpf.DataGrid.Licenser.LicenseKey = "Enter your license key here";
+            Data = Xceed.Wpf.DataGrid.Samples.SampleData.DataProvider.GetNorthwindDataSet();
+            Orders = Data.Tables[ "Orders" ];
+            base.OnStartup( e );
+          }
+        }
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+      Public Partial Class App
+          Inherits Application
+          Public Property Data As DataSet
+          Public Property Orders As DataTable
+          Protected Overrides Sub OnStartup(ByVal e As StartupEventArgs)
+              ' Set the licence key
+              Xceed.Wpf.DataGrid.Licenser.LicenseKey = "Enter your license key here"
+              Data = Xceed.Wpf.DataGrid.Samples.SampleData.DataProvider.GetNorthwindDataSet()
+              Orders = Data.Tables("Orders")
+              MyBase.OnStartup(e)
+          End Sub
+      End Class
+      ```
+    </TabItem>    
+  </Tabs>
+
+  The next example demonstrates how to bind a grid to the *Orders* table, which is retrieved through the **Orders** property implemented in the code above.
+
+  ```xaml
+  <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">
+      <Grid.Resources>      
+      <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                      Source="{Binding Source={x:Static Application.Current},
+                                                          Path=Orders}"/>
+      </Grid.Resources>
+      <xcdg:DataGridControl x:Name="OrdersGrid"
+                            ItemsSource="{Binding Source={StaticResource cvs_orders}}"/>
+  </Grid>
+  ```
+
+</details>
+
+<details>
+
+  <summary>Example 2: Binding to an array</summary>
+
+  The following example demonstrates how to bind a grid to an array defined in the resources of the containing grid.
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:s="clr-namespace:System;assembly=mscorlib"
+            xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">                     
+        <Grid.Resources>
+        <x:Array x:Key="data_list" Type="{x:Type s:String}">
+          <s:String>Sunday</s:String>
+          <s:String>Monday</s:String>
+          <s:String>Tuesday</s:String>
+          <s:String>Wednesday</s:String>
+          <s:String>Thursday</s:String>
+          <s:String>Friday</s:String>
+          <s:String>Saturday</s:String>
+        </x:Array>
+        </Grid.Resources>
+        <xcdg:DataGridControl x:Name="OrdersGrid"
+                              ItemsSource="{StaticResource data_list}"/>
+      </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+      string[] data = new string[ 7 ];
+      data[ 0 ] = "Sunday";
+      data[ 1 ] = "Monday";
+      data[ 2 ] = "Tuesday";
+      data[ 3 ] = "Wednesday";
+      data[ 4 ] = "Thursday";
+      data[ 5 ] = "Friday";
+      data[ 6 ] = "Saturday";
+      dataGridControl.ItemsSource = data;
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+      Dim data() As New String( 6 )
+      data( 0 ) = "Sunday"
+      data( 1 ) = "Monday"
+      data( 2 ) = "Tuesday"
+      data( 3 ) = "Wednesday"
+      data( 4 ) = "Thursday"
+      data( 5 ) = "Friday"
+      data( 6 ) = "Saturday"
+      dataGridControl.ItemsSource = data
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>
+
+<details>
+
+  <summary>Example 3: Retrieving values from the current item</summary>
+
+  The following example demonstrates how to retrieve the value of the Ship*Country and *ShipCity* properties of the current item and display them in `TextBlocks` located above the grid. Note that an item in a grid must be current in order for the information to be displayed.
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">
+        <Grid.Resources>
+          <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                          Source="{Binding Source={x:Static Application.Current},
+                                                            Path=Orders}"/>
+        </Grid.Resources>
+        <DockPanel>   
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+              <TextBlock Text="{Binding ElementName=OrdersGrid, Path=CurrentItem[ShipCountry]}"/>
+              <TextBlock Text=" - "/> 
+              <TextBlock Text="{Binding ElementName=OrdersGrid, Path=CurrentItem[ShipCity]}"/>
+            </StackPanel>    
+            <xcdg:DataGridControl x:Name="OrdersGrid"
+                                  ItemsSource="{Binding Source={StaticResource cvs_orders}}"
+                                  DockPanel.Dock="Bottom">
+            </xcdg:DataGridControl>
+        </DockPanel>
+      </Grid>
+      ```
+    </TabItem>
+  </Tabs>
+  
+</details>
+
+<details>
+
+  <summary>Example 4: Providing unbound data</summary>
+
+  The following example demonstrates how to add *Person* data to a custom `ObservableCollection` of *Person* objects. 
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
+            xmlns:local="clr-namespace:Xceed.Wpf.Documentation"
+            xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase">
+        <Grid.Resources>
+        <local:PersonObservableCollection x:Key="personData">
+          <local:Person FirstName="Jenny"
+                        LastName="Beland"
+                        Occupation="Writer"/>
+          <local:Person FirstName="Francois"
+                        LastName="Carignan"
+                        Occupation="Developer"/>
+          <local:Person FirstName="Pascal"
+                        LastName="Bourque"
+                        Occupation="Developer"/>
+          <local:Person FirstName="Michel"
+                        LastName="Fortin"
+                        Occupation="Developer"/>
+          <local:Person FirstName="Marc"
+                        LastName="Laroche"
+                        Occupation="Developer"/>
+          <local:Person FirstName="Pierre-Luc"
+                        LastName="Ledoux"
+                        Occupation="Developer"/>
+          <local:Person FirstName="Mathieu"
+                        LastName="Drimonakos"
+                        Occupation="TechnicalSupport"/>
+          <local:Person FirstName="Catherine"
+                        LastName="Sauzede"
+                        Occupation="Infograph"/>
+        </local:PersonObservableCollection>
+        <xcdg:DataGridCollectionViewSource x:Key="cvs_person"
+                                            ItemType="{x:Type local:Person}"
+                                            Source="{StaticResource personData}">
+            <xcdg:DataGridCollectionViewSource.GroupDescriptions>
+              <xcdg:DataGridGroupDescription PropertyName="Occupation"/>
+            </xcdg:DataGridCollectionViewSource.GroupDescriptions>
+            <xcdg:DataGridCollectionViewSource.SortDescriptions>
+              <scm:SortDescription PropertyName="Occupation"
+                                    Direction="Ascending"/>
+            </xcdg:DataGridCollectionViewSource.SortDescriptions>
+          </xcdg:DataGridCollectionViewSource>
+        </Grid.Resources>
+      <xcdg:DataGridControl x:Name="PersonGrid"
+                            ItemsSource="{Binding Source={StaticResource cvs_person}}"/>
+      </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+      ObservableCollection<Person> people = new ObservableCollection<Person>();
+      people.Add( new Person( "Jenny", "Beland" ) );
+      people.Add( new Person( "Francois", "Carignan" ) );
+      people.Add( new Person( "Jacques", "Bourque" ) );
+      people.Add( new Person( "Pascal", "Bourque" ) );
+      people.Add( new Person( "Marc", "Laroche" ) );
+      people.Add( new Person( "Pierre-Luc", "Ledoux" ) );
+      people.Add( new Person( "Catherine", "Sauzede" ) );
+      people.Add( new Person( "Christian", "Nadeau" ) );
+      DataGridCollectionView collectionView = new DataGridCollectionView( people, typeof( Person ) );
+      dataGridControl.ItemsSource = collectionView;
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+      Dim people As New ObservableCollection( Of Person )()
+      people.Add( New Person( "Jenny", "Beland" ) )
+      people.Add( New Person( "Francois", "Carignan" ) )
+      people.Add( New Person( "Jacques", "Bourque" ) )
+      people.Add( New Person( "Pascal", "Bourque" ) )
+      people.Add( New Person( "Marc", "Laroche" ) )
+      people.Add( New Person( "Pierre-Luc", "Ledoux" ) )
+      people.Add( New Person( "Catherine", "Sauzede" ) )
+      people.Add( New Person( "Christian", "Nadeau" ) )
+      Dim collectionView As New DataGridCollectionView( people, GetType( Person ) )
+      dataGridControl.ItemsSource = collectionView
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>
+
+<details>
+
+  <summary>Example 5: Binding to a LINQ table</summary>
+
+  The following example demonstrates how to bind a grid to a LINQ table and submit any modifications made to the data items using the SubmitChanges method. 
+
+  This example assumes that a new **LINQ to SQL Classes** item named Northwind.dbml has been added to the project and that it contains the *Orders*, *Customers*, and *Shippers* tables. The Northwind.designer.cs that is created at the same time represents the NorthwindDataContext and should automatically contain all the relevant members. It also assumes that a property named LinqDataContext that returns a new instance of the NorthwindDataContext exists in the **App.xaml.cs** code-behind file.
+
+  For more information on LINQ, refer to The LINQ Project Web site.
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+        <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
+              xmlns:local="clr-namespace:Xceed.Wpf.Documentation">
+          <Grid.Resources>
+            <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                              Source="{Binding Source={x:Static Application.Current},
+                                                                Path=LinqDataContext.Orders}"/>
+            <DataTemplate DataType="{x:Type local:Shipper}">
+              <TextBlock Text="{Binding CompanyName}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type local:Customer}">
+              <TextBlock Text="{Binding CompanyName}"/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type local:Employee}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding FirstName}"/>
+                <TextBlock Text=" " />
+                <TextBlock Text="{Binding LastName}"/>
+              </StackPanel>
+            </DataTemplate>
+            <xcdg:CellEditor x:Key="employeeEditor">
+              <xcdg:CellEditor.EditTemplate>
+                <DataTemplate>
+                  <ComboBox ItemsSource="{Binding Source={x:Static Application.Current}, 
+                                                  Path=LinqDataContext.Employees}"
+                            SelectedItem="{xcdg:CellEditorBinding}"/>
+                </DataTemplate>
+              </xcdg:CellEditor.EditTemplate>
+            </xcdg:CellEditor>
+            <xcdg:CellEditor x:Key="customerEditor">
+              <xcdg:CellEditor.EditTemplate>
+                <DataTemplate>
+                  <ComboBox ItemsSource="{Binding Source={x:Static Application.Current},
+                                                  Path=LinqDataContext.Customers}"
+                            SelectedItem="{xcdg:CellEditorBinding}"/>
+                </DataTemplate>
+              </xcdg:CellEditor.EditTemplate>
+            </xcdg:CellEditor>
+            <xcdg:CellEditor x:Key="shipperEditor">
+              <xcdg:CellEditor.EditTemplate>
+                <DataTemplate>
+                  <ComboBox ItemsSource="{Binding Source={x:Static Application.Current}, Path=LinqDataContext.Shippers}"
+                            SelectedItem="{xcdg:CellEditorBinding}"/>
+                </DataTemplate>
+              </xcdg:CellEditor.EditTemplate>
+            </xcdg:CellEditor>
+          </Grid.Resources>
+          <DockPanel>
+            <Button Content="Save Modifications"
+                    Click="SaveModifications"
+                    DockPanel.Dock="Top" />
+            <xcdg:DataGridControl x:Name="OrdersGrid"
+                                  ItemsSource="{Binding Source={StaticResource cvs_orders}}">
+              <xcdg:DataGridControl.Columns>
+                <xcdg:Column FieldName="OrderID"
+                            Visible="False"/>
+                <xcdg:Column FieldName="EmployeeID"
+                            Visible="False"/>
+                <xcdg:Column FieldName="Employee"
+                            CellEditor="{StaticResource employeeEditor}"/>
+                <xcdg:Column FieldName="CustomerID"
+                            Visible="False"/>
+                <xcdg:Column FieldName="Customer"
+                            CellEditor="{StaticResource customerEditor}"
+                            Title="Company Name"/>
+                <xcdg:Column FieldName="ShipVia"
+                            Visible="False"/>
+                <xcdg:Column FieldName="Shipper"
+                            CellEditor="{StaticResource shipperEditor}"/>
+              </xcdg:DataGridControl.Columns>
+              <xcdg:DataGridControl.View>
+                <xcdg:TableView>
+                  <xcdg:TableView.FixedFooters>
+                    <DataTemplate>
+                      <xcdg:InsertionRow/>
+                    </DataTemplate>
+                  </xcdg:TableView.FixedFooters>
+                </xcdg:TableView>
+              </xcdg:DataGridControl.View>
+            </xcdg:DataGridControl>
+          </DockPanel>
+        </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+      private void SaveModifications( object sender, RoutedEventArgs e )
+      {     
+      App.LinqDataContext.SubmitChanges();
+      }
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+      Private Sub SaveModifications( sender As Object, e As RoutedEventArgs )
+        App.LinqDataContext.SubmitChanges()
+      End Sub
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>
+
+<details>
+
+  <summary>Example 6: Binding to a LINQ query (SQL)</summary>
+
+  The following example demonstrates how to bind a grid to an **SQL LINQ** query and submit any modifications made to the data items using the `SubmitChanges` method. 
+
+  :::tip
+  Although existing data items can be modified and the changes committed, it is not possible to insert new data items.
+  :::
+
+  This example assumes that a new LINQ to SQL Classes item named Northwind.dbml has been added to the project and that it contains the Orders, Customers, and Shippers tables. The Northwind.designer.cs that is created at the same time represents the NorthwindDataContext and should automatically contain all the relevant members. It also assumes that a property named OrdersQuery that returns a new new query based on the value selected in the combo box.
+
+  The Window1 class implements `INotifyPropertyChanged` so that the `DataGridCollectionViewSource` can be notified when the query changes in order to refresh its content.
+
+  For more information on LINQ, refer to The [LINQ Project Web site](http://msdn2.microsoft.com/en-us/netframework/aa904594.aspx).
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid"
+            xmlns:local="clr-namespace:Xceed.Wpf.Documentation">
+        <Grid.Resources>
+          <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                            Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}},
+                                                            Path=OrdersQuery}">
+            <xcdg:DataGridCollectionViewSource.GroupDescriptions>
+              <xcdg:DataGridGroupDescription PropertyName="Shipper"/>
+            </xcdg:DataGridCollectionViewSource.GroupDescriptions>
+          </xcdg:DataGridCollectionViewSource>
+          <DataTemplate DataType="{x:Type local:Shipper}">
+            <TextBlock Text="{Binding CompanyName}"/>
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type local:Customer}">
+            <TextBlock Text="{Binding CompanyName}"/>
+          </DataTemplate>
+          <DataTemplate DataType="{x:Type local:Employee}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding FirstName}"/>
+              <TextBlock Text=" " />
+              <TextBlock Text="{Binding LastName}"/>
+            </StackPanel>
+          </DataTemplate>       
+        </Grid.Resources>
+        <DockPanel>
+          <StackPanel Orientation="Horizontal"
+                      DockPanel.Dock="Top">
+            <Button Content="Save Modifications"
+                    Click="SaveModifications"/>
+            <ComboBox x:Name="ShipperCombo"
+                      ItemsSource="{Binding Source={x:Static Application.Current}, Path=LinqDataContext.Shippers}"
+                      SelectionChanged="ShipperSelectionChanged"/>
+          </StackPanel>
+          <xcdg:DataGridControl x:Name="OrdersGrid"
+                                ItemsSource="{Binding Source={StaticResource cvs_orders}}">
+            <xcdg:DataGridControl.Columns>
+              <xcdg:Column FieldName="Shipper"
+                          VisiblePosition="0"/>
+              <xcdg:Column FieldName="OrderID"
+                          Visible="False"/>
+              <xcdg:Column FieldName="EmployeeID"
+                          Visible="False"/>
+              <xcdg:Column FieldName="CustomerID"
+                          Visible="False"/>
+              <xcdg:Column FieldName="Customer"
+                          Title="Company Name"/>
+              <xcdg:Column FieldName="ShipVia"
+                          Visible="False"/>
+            </xcdg:DataGridControl.Columns>
+          </xcdg:DataGridControl>
+        </DockPanel>
+      </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+        namespace Xceed.Wpf.Documentation
+        {
+        public partial class Window1 : Window, INotifyPropertyChanged
+        {
+          public Window1()
+          {
+            InitializeComponent();    
+          }
+          private IEnumerable m_query = null;
+          public IEnumerable OrdersQuery
+          {
+            get
+            {
+              if( m_query == null )
+              {
+                m_query = from orders in App.LinqDataContext.Orders
+                          select orders;
+              }
+              return m_query;
+            }
+            set
+            {
+              m_query = value;
+              this.OnPropertyChanged( new PropertyChangedEventArgs( "OrdersQuery" ) );
+            }
+          }
+          private void ShipperSelectionChanged( object sender, SelectionChangedEventArgs e )
+          {
+            this.OrdersQuery = from orders in App.LinqDataContext.Orders
+                        where orders.Shipper.CompanyName == ( ( Shipper )this.ShipperCombo.SelectedValue ).CompanyName
+                        select orders;
+          }
+          private void SaveModifications( object sender, RoutedEventArgs e )
+          {    
+            App.LinqDataContext.SubmitChanges();
+          }
+          public event PropertyChangedEventHandler PropertyChanged;
+          private void OnPropertyChanged( PropertyChangedEventArgs e )
+          {
+            if( this.PropertyChanged == null )
+              return;
+            this.PropertyChanged( this, e );
+          }
+        }
+        }
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+        Namespace Xceed.Wpf.Documentation
+        Public Partial Class Window1
+            Inherits Window
+            Implements INotifyPropertyChanged
+            Public Sub New()
+              InitializeComponent()
+            End Sub
+            Private m_query As IEnumerable = Nothing
+            Public Property OrdersQuery() As IEnumerable
+              Get
+                If m_query Is Nothing Then
+                  m_query = From orders In App.LinqDataContext.Orders _
+                            Select orders
+                End If
+                Return m_query
+              End Get
+              Set
+                m_query = Value
+                Me.OnPropertyChanged(New PropertyChangedEventArgs("OrdersQuery"))
+              End Set
+            End Property
+            Private Sub ShipperSelectionChanged(ByVal sender As Object, ByVal e As SelectionChangedEventArgs)
+              Me.OrdersQuey = From orders In App.LinqDataContext.Orders _
+                        Where orders.Shipper.CompanyName = CTYpe( Me.ShipperCombo.SelectedValue, Shipper).CompanyName _
+                        Select orders
+            End Sub
+            Private Sub SaveModifications(ByVal sender As Object, ByVal e As RoutedEventArgs)
+              App.LinqDataContext.SubmitChanges()
+            End Sub
+            Public Event PropertyChanged As PropertyChangedEventHandler Implements INotifyPropertyChanged.PropertyChanged
+            Private Sub OnPropertyChanged(ByVal e As PropertyChangedEventArgs)
+              If Me.PropertyChangedEvent Is Nothing Then
+                Return
+              End If
+              RaiseEvent PropertyChanged(Me, e)
+            End Sub
+          End Class
+        End Namespace
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>
+
+<details>
+
+  <summary>Example 7: Binding to a LINQ query (XML)</summary>
+
+  The following example demonstrates how to bind a grid to an XML query on an **XDocument** that loads the XML version of the *Orders* table of the Northwind database.
+
+  :::tip
+  The content of the resulting grid will not be editable.
+  :::
+
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">
+        <Grid.Resources>
+          <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                          Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}},
+                                          Path=XmlData}"/>
+        </Grid.Resources>
+      
+        <xcdg:DataGridControl x:Name="OrdersGrid"
+                            ItemsSource="{Binding Source={StaticResource cvs_orders}}"/>
+      </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+        public IEnumerable XmlData
+        {
+          get
+          {
+            XDocument document = App.NorthwindDocument;
+            IEnumerable data = from order in document.Element( "dataroot" ).Descendants( "Orders" )
+                                select new
+                                {
+                                  ShipCountry = order.Element( "ShipCountry" ).Value,
+                                  ShipCity = order.Element( "ShipCity" ).Value,
+                                  ShipAddress = order.Element( "ShipAddress" ).Value,
+                                  ShipName = order.Element( "ShipName" ).Value,
+                                  ShipVia = order.Element( "ShipVia" ).Value,
+                                  Freight = order.Element( "Freight" ).Value
+                                };
+            return data;
+          }
+        }
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+        Public ReadOnly Property XmlData() As IEnumerable
+          Get
+            Dim document As XDocument = App.NorthwindDocument
+            Dim data As IEnumerable = From order In document.Element("dataroot").Descendants("Orders") _
+                                      Select New With {.ShipCountry = order.Element("ShipCountry").Value, _
+                                        .ShipCity = order.Element("ShipCity").Value, _
+                                        .ShipAddress = order.Element("ShipAddress").Value, _
+                                        .ShipName = order.Element("ShipName").Value, _
+                                        .Freight = order.Element("Freight").Value}
+            Return data
+          End Get
+        End Property
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>
+
+<details>
+
+  <summary>Example 8: Deleting selected items</summary>
+
+  The following example demonstrates how to delete the selected items and handle the `DeletingSelectedItemError` and `DeletingSelectedItems` events.
+
+  <Tabs>
+  <TabItem value="xaml" label="XAML" default>
+
+      ```xml
+      <Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">
+        <Grid.Resources>
+          <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                              Source="{Binding Source={x:Static Application.Current}, Path=Orders}" />      
+        </Grid.Resources>
+        <xcdg:DataGridControl x:Name="OrdersGrid"
+                              ItemsSource="{Binding Source={StaticResource cvs_orders}}"
+                              IsDeleteCommandEnabled="True"
+                              DeletingSelectedItemError="OrdersGrid_DeletingSelectedItemError"
+                              DeletingSelectedItems="OrdersGrid_DeletingSelectedItems"/>       
+      </Grid>
+      ```
+    </TabItem>
+    <TabItem value="csharp" label="C#">
+
+      ```csharp
+        private void OrdersGrid_DeletingSelectedItemError( object sender, DeletingSelectedItemErrorRoutedEventArgs e )
+        {    
+          MessageBoxResult result = System.Windows.MessageBox.Show( "The following error occurred while attempting to delete an item: " +
+                                                    e.Exception.Message + " Do you want to attempt to continue?", "Error", MessageBoxButton.YesNoCancel );
+          // If "No", the item would be skipped. Since "Skip" is the default action,
+          // there is no need to verify it.
+          if( result == MessageBoxResult.Yes )
+          {
+            if( this.OrdersGrid.IsBeingEdited )
+            {
+              try
+              {
+                this.OrdersGrid.CancelEdit();
+                e.Action = DeletingSelectedItemErrorAction.Retry;
+              }
+              catch
+              {
+                e.Action = DeletingSelectedItemErrorAction.Skip;
+              }        
+            }
+          }
+          if( result == MessageBoxResult.Cancel )
+          {
+            e.Action = DeletingSelectedItemErrorAction.Abort;
+          }
+        }
+        private void OrdersGrid_DeletingSelectedItems( object sender, CancelRoutedEventArgs e )
+        {
+          MessageBoxResult result = System.Windows.MessageBox.Show( "Are you certain you want to delete the selected rows?", "Confirm Delete", MessageBoxButton.YesNo );
+          if( result == MessageBoxResult.No )
+          {
+            e.Cancel = true;
+          }     
+        }
+      ```
+    </TabItem>
+    <TabItem value="vbnet" label="VB.NET">
+
+      ```vbnet
+      Private Sub OrdersGrid_DeletingSelectedItemError( ByVal sender As Object, ByVal e As DeletingSelectedItemErrorRoutedEventArgs )
+        Dim result As MessageBoxResult = System.Windows.MessageBox.Show( "The following error occurred while attempting to delete an item: " & _
+                                                  e.Exception.Message & " Do you want to attempt to continue?", "Error", MessageBoxButton.YesNoCancel )
+        ' If "No", the item would be skipped. Since "Skip" is the default action,
+        ' there is no need to verify it.
+        If result = MessageBoxResult.Yes Then
+          If Me.OrdersGrid.IsBeingEdited Then
+            Try
+              Me.OrdersGrid.CancelEdit()
+              e.Action = DeletingSelectedItemErrorAction.Retry
+            Catch
+              e.Action = DeletingSelectedItemErrorAction.Skip
+            End Try
+          End If
+        End If
+        If result = MessageBoxResult.Cancel Then
+          e.Action = DeletingSelectedItemErrorAction.Abort
+        End If
+      End Sub
+      Private Sub OrdersGrid_DeletingSelectedItems( ByVal sender As Object, ByVal e As CancelRoutedEventArgs )
+        Dim result As MessageBoxResult = System.Windows.MessageBox.Show( "Are you certain you want to delete the selected rows?", _
+                                                                      "Confirm Delete", MessageBoxButton.YesNo )
+        If result = MessageBoxResult.No Then
+          e.Cancel = True
+        End If
+      End Sub
+      ```
+    </TabItem>    
+  </Tabs>
+
+</details>

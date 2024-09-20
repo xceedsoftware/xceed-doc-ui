@@ -59,7 +59,18 @@ const config: Config = {
       } satisfies Preset.Options,
     ],
   ],
-
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'datagrid',
+        path: 'datagrid',
+        routeBasePath: 'datagrid',
+        sidebarPath: './sidebardatagrid.ts',
+        // ... other options
+      },
+    ],
+  ],
   themeConfig: {
     docs: {
       sidebar: {
@@ -88,6 +99,7 @@ const config: Config = {
           position: 'left',
           label: 'Toolkit Plus for WPF',
         },
+        { to: '/datagrid/welcome', label:'DataGrid for WPF', position: 'left'},
         {to: '/about', label: 'About', position: 'left'},
         {
           href: 'https://github.com/xceedsoftware/wpf-ui',

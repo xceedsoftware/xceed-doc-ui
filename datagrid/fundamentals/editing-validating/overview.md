@@ -1,1 +1,47 @@
+---
+title: Editing and Validating Data 
+---
+
 # Editing and Validating Data Overview
+
+The content of each cell in a grid—assuming that they are not read-only—can be edited programmatically or at runtime by the end user.
+
+How a grid enters edit mode at runtime, is determined by the `EditTriggers` property. By default, the `EditTriggers` property is set to `EditCommand`, `ClickOnCurrentCell`, and `ActivationGesture` meaning that a grid will enter edit mode when the edit command is sent (by default, F2), when the current cell is clicked, or when a key or text input matches one of the activation gestures for current cell's editor (see Example 1). Programmatically, the content of a cell can be edited when the parent row's BeginEdit method is called.
+
+At runtime, modifications made to the content of a cell can be committed when the focus leaves the row, or discarded when the **Escape** key is pressed. Programmatically, modifications are committed when the parent row's EndEdit method is called, and discarded when the CancelEdit method is called. In either case, in order for the modifications to be committed, they must pass the validation process (see [Validating Data](/datagrid/fundamentals/editing-validating/validation)).
+
+:::caution
+If a grid is bound to a DataSet, only the in-memory data will be updated when modifications are committed. For information on how to update a DataSet's underlying data source, refer to the [DataSet Class](http://msdn2.microsoft.com/en-us/library/system.data.dataset(VS.80).aspx) topic in the Microsoft Windows SDK.
+:::
+
+The `Cell` and `Row` classes expose routed events (see Table 1 in Routed Edit Events) that are triggered during various stages of the edit process and that can be handled by any parent element in the visual tree (bubbling). These events are raised when the `BeginEdit`, `EndEdit`, or `CancelEdit` methods are called, both programmatically and through UI interactions (e.g., pressing ESC key), to provide notifications when a process is about to begin and when it has ended. 
+
+Editing through the DataGridCollectionView
+Unlike the previously mentioned `BeginEdit`, `EndEdit`, and `CancelEdit` methods, which allow items to be edited the grid, the `EditItem`, `CommitEdit`, and `CancelEdit` methods exposed by the DataGridCollectionView class allow items in the underlying data source to be edited directly. 
+
+These methods also raise events that allow the edit process to be handled manually.
+
+## Validation
+Xceed DataGrid for WPF offers data validation support at various levels, including cells, row, and business-objects. How and when data is validated is determined by binding- and UI-level validation rules, which are queried when a cell or row is about to end its edit process, when a cell's content is changed, or when data is loaded into a grid.
+
+When the value of a cell fails the validation process, its `HasValidationError` property will return true and its `ValidationError` property will contain a `CellValidationError`, which provides information on the cell in error, the error content, the exception (if one was thrown), and the validation rule that failed.  If the validation rule that failed is a binding-level `ValidationRule`, it will be wrapped in a `PassthroughCellValidationRule.Validation` errors will also be reported by a row when the value of one or more of its cells fails the validation process. Like cells, when a row contains validation errors, its `HasValidationError` property will return true and its ValidationError property will contain a `RowValidationError`, which provides information on the row in error, the error content, the exception, and the validation rule that failed.
+
+## Examples
+All examples in this topic assume that the grid is bound to the Orders table of the Northwind database, unless stated otherwise.
+
+Example 1: Entering edit when a cell is current
+
+The following example demonstrates how to enter edit mode only when a cell becomes current by setting the EditTriggers property to CellIsCurrent.
+
+```xml
+<Grid xmlns:xcdg="http://schemas.xceed.com/wpf/xaml/datagrid">
+  <Grid.Resources>
+    <xcdg:DataGridCollectionViewSource x:Key="cvs_orders"
+                                    Source="{Binding Source={x:Static Application.Current},
+                                     Path=Orders}"/>
+  </Grid.Resources>
+  <xcdg:DataGridControl x:Name="OrdersGrid"
+                        ItemsSource="{Binding Source={StaticResource cvs_orders}}"
+                        EditTriggers="CellIsCurrent"/>      
+</Grid>
+```
