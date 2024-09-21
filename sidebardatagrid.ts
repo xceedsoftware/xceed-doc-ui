@@ -287,6 +287,7 @@ const sidebars: SidebarsConfig = {
         'fundamentals/foreign-key-detection',
         'fundamentals/items-containers',
         'fundamentals/mvvm-support',
+        'fundamentals/persist-settings',
         'fundamentals/printing-exporting-to-xps',
         'fundamentals/automation-testing',
         'fundamentals/ui-virtualization',
