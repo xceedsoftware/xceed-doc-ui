@@ -1,4 +1,3 @@
-
 # Code Snippets
 
 Throughout this section of the documentation you will find fully functional code snippets that demonstrate a variety of features used in real-life scenarios.
