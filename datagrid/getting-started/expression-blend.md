@@ -2,7 +2,7 @@
 
 In Expression Blend, once the references to the ***Xceed.Wpf.DataGrid*** and ***Xceed.Wpf.Controls*** assemblies have been added to the project, the **DataGridControl** control, along with all other stylable data-grid elements, will be found in the *Asset Library* under the *Custom Controls* tab and can be added by double-clicking on the control that will appear in the asset toolbox.
 
-![Asset Library Blend](/img/blend_assetLibrary_thumb.gif)
+![Asset Library Blend](/img/blend_assetlibrary_thumb.gif)
 
 ***Figure 1:** Asset Library in Blend*
 
