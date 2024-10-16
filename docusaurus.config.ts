@@ -8,14 +8,14 @@ const config: Config = {
   favicon: 'img/logox.ico',
 
   // Set the production url of your site here
-  url: 'https://vargasrxceed.github.io',
+  url: 'https://xceedsoftware.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/xceed-doc-ui/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'vargasrxceed', // Usually your GitHub org/user name.
+  organizationName: 'xceedsoftware', // Usually your GitHub org/user name.
   projectName: 'xceed-doc-ui', // Usually your repo name.
 
   onBrokenLinks: 'throw',
