@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'Xceed UI Technologies for .NET',
+  title: 'Xceed UI Technologies for .NET dodo',
   tagline: 'Xceed UI Technologies for .NET documentation',
   favicon: 'img/logox.ico',
 
