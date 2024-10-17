@@ -5,7 +5,7 @@ import TabItem from '@theme/TabItem';
 
 Multi-surface views are card views that expose multiple "surfaces", which represent the positions of cards in the view. Surfaces, such as those exposed by the Cardflow™ 3D view, can be exposed for the center card, the cards located to either side of the center card, or for any other desired surface (see Figure 1).
 
-![cardPosition](/img/cardPosition_thumb.png)
+
 
 * **Figure 1:** Surfaces exposed by the Cardflow™ 3D view *
 
