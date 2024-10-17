@@ -10,7 +10,7 @@ The Cardflow™ 3D view, which is represented by the `CardflowView3D` class, pro
 ***Figure 1**: Cardflow 3D view in Elemental Black theme with Aurora Red background *
 
 ## Surfaces
-The Cardflow 3D view exposes different surfaces that can be configured to display data. These include the **Left** and **Right** surfaces, which are displayed on all cards located to the left and right of the center card, respectively, the Center surface, which is displayed on the front of the center card, and the **Back** surface, which is displayed on the back of the center card (see Figure 1 in [Multi-surface Views Overview](multisurface-view-overview)).
+The Cardflow 3D view exposes different surfaces that can be configured to display data. These include the **Left** and **Right** surfaces, which are displayed on all cards located to the left and right of the center card, respectively, the Center surface, which is displayed on the front of the center card, and the **Back** surface, which is displayed on the back of the center card (see Figure 1 in [Multi-surface Views Overview](/datagrid/fundamentals/views-themes/views/cardflow-3d-view/multisurface-view-overview)).
 
 :::note
 The back surface of the center card can only be displayed if the `IsCardFlippingEnabled` property, which allows the center card to be flipped, is set to true.
